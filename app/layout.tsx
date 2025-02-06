@@ -1,5 +1,7 @@
 import { CartProvider } from "@/context/cart-context"
+import { AuthProvider } from "@/context/auth-context"
 import { CartSheet } from "@/components/cart-sheet"
+import { ToastWrapper } from "@/components/toast-wrapper"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
@@ -7,9 +9,6 @@ export const metadata: Metadata = {
   title: "Tienda de Ropa",
   description: "Tienda de ropa online",
 }
-
-// Separamos el ToastWrapper en su propio archivo cliente
-import { ToastWrapper } from "@/components/toast-wrapper"
 
 export default function RootLayout({
   children,
@@ -20,9 +19,11 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <CartProvider>
-          {children}
-          <CartSheet />
-          <ToastWrapper />
+          <AuthProvider>
+            {children}
+            <CartSheet />
+            <ToastWrapper />
+          </AuthProvider>
         </CartProvider>
       </body>
     </html>

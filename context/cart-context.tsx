@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback } from "react"
+import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import type { ReactNode } from "react"
 
 interface CartItem {
@@ -16,11 +16,13 @@ interface CartContextType {
   addItem: (item: CartItem) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
+  clearCart: () => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
   total: number
   showToast: boolean
   setShowToast: (show: boolean) => void
+  syncCart: (userId: string | null) => Promise<void>
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -29,6 +31,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [showToast, setShowToast] = useState(false)
+
+  const syncCart = useCallback(async (userId: string | null) => {
+    if (userId) {
+      try {
+        const response = await fetch("/api/cart")
+        if (response.ok) {
+          const data = await response.json()
+          setItems(data.items)
+        }
+      } catch (error) {
+        console.error("Error fetching cart:", error)
+      }
+    } else {
+      const savedCart = localStorage.getItem("cart")
+      if (savedCart) {
+        setItems(JSON.parse(savedCart))
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart")
+    if (savedCart) {
+      setItems(JSON.parse(savedCart))
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(items))
+  }, [items])
 
   const addItem = useCallback((item: CartItem) => {
     setItems((current) => {
@@ -39,7 +71,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...current, { ...item, quantity: 1 }]
     })
     setShowToast(true)
-    setTimeout(() => setShowToast(false), 3000) // Hide toast after 3 seconds
+    setTimeout(() => setShowToast(false), 3000)
   }, [])
 
   const removeItem = useCallback((id: string) => {
@@ -55,6 +87,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const clearCart = useCallback(() => {
+    setItems([])
+    localStorage.removeItem("cart")
+    setIsOpen(false)
+  }, [])
+
   const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
 
   return (
@@ -64,11 +102,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addItem,
         removeItem,
         updateQuantity,
+        clearCart,
         isOpen,
         setIsOpen,
         total,
         showToast,
         setShowToast,
+        syncCart,
       }}
     >
       {children}

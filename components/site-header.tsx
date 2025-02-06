@@ -2,11 +2,20 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ShoppingCart, User } from "lucide-react"
+import { ShoppingCart, User, LogOut } from "lucide-react"
 import { useCart } from "@/context/cart-context"
+import { useAuth } from "@/context/auth-context"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
 
 export function SiteHeader() {
-  const { setIsOpen } = useCart()
+  const { setIsOpen, clearCart } = useCart()
+  const { user, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    clearCart() // Limpiamos el carrito al cerrar sesión
+  }
 
   return (
     <header className="bg-black text-white">
@@ -39,13 +48,34 @@ export function SiteHeader() {
             <ShoppingCart className="h-5 w-5" />
             Carrito
           </button>
-          <Link href="/login" className="hover:text-gray-300 flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Login
-          </Link>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuItem className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Cerrar sesión</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login" className="hover:text-gray-300 flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Login
+            </Link>
+          )}
         </div>
       </nav>
     </header>
   )
 }
-
