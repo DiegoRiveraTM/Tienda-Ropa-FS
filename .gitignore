@@ -1,0 +1,29 @@
+# Archivos y carpetas de dependencias
+node_modules/
+
+# Logs de NPM/Yarn/Pnpm
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Variables de entorno (no deben subirse al repositorio)
+.env
+.env.local
+.env.*.local
+
+# Directorios de compilación / build
+dist/
+build/
+out/
+.next/
+
+# Cobertura de tests
+coverage/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Otros logs
+*.log
