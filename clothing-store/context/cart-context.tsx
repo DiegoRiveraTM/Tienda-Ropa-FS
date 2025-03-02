@@ -35,11 +35,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [showToast, setShowToast] = useState(false);
 
   // 📌 Obtener el token desde localStorage
-  const getToken = () => {
-    const token = localStorage.getItem("authToken");
-    console.log("Token retrieved from localStorage:", token);
-    return token;
-  };
+  const getToken = () => localStorage.getItem("authToken");
 
   // 🔄 Sincronizar el carrito con el backend
   const syncCart = useCallback(async (userId: string | null) => {

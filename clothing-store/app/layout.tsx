@@ -4,6 +4,7 @@ import { CartSheet } from "@/components/cart-sheet"
 import { ToastWrapper } from "@/components/toast-wrapper"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
+import './globals.css'; // Importa los estilos globales
 
 export const metadata: Metadata = {
   title: "Tienda de Ropa",

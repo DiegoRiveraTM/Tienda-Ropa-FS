@@ -7,11 +7,11 @@ export interface IProduct extends Document {
   category: "hombres" | "mujeres" | "ninos";
 }
 
-const ProductSchema: Schema = new Schema({
+export const productSchema = new Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: true },
   category: { type: String, enum: ["hombres", "mujeres", "ninos"], required: true },
 });
 
-export default mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
+export default mongoose.models.Product || mongoose.model<IProduct>("Product", productSchema);

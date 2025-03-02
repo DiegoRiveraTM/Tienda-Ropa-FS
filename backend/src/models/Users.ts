@@ -2,8 +2,11 @@ import mongoose, { Document, Schema } from "mongoose";
 
 // Definir la interfaz para los ítems del carrito
 export interface ICartItem {
-  productId: string; // Cambiar a String
-  quantity: number;
+  productId: string; // ID del producto como String
+  name: string;      // Nombre del producto
+  price: number;     // Precio del producto
+  image: string;     // Imagen del producto
+  quantity: number;  // Cantidad del producto
 }
 
 // Definir la interfaz del usuario
@@ -17,6 +20,9 @@ export interface IUser extends Document {
 // Esquema de los ítems del carrito
 const CartItemSchema: Schema = new Schema({
   productId: { type: String, required: true }, // Cambiar a String
+  name: { type: String, required: true },      // Nombre del producto
+  price: { type: Number, required: true },     // Precio del producto
+  image: { type: String, required: true },     // Imagen del producto
   quantity: { type: Number, required: true, default: 1 }
 });
 
