@@ -23,11 +23,11 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
 import type { AxiosError } from "axios";
 
 interface CartItem {
-  id: string;
+  productId: string;  // 🔥 Asegúrate de que usa `productId` en vez de `id`
   name: string;
   price: number;
-  quantity: number;
   image: string;
+  quantity: number;
 }
 
 interface ProductCardProps {
@@ -56,61 +56,19 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
     }
   
     try {
-      const response = await api.post(
-        "/cart",
-        { productId: id, quantity: 1 },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      console.log("🛒 Intentando agregar al carrito:", { id, name, price, image });
   
-      if (response.status !== 200) {
-        throw new Error("Failed to add item to cart");
-      }
+      await addItem({
+        id,
+        productId: id, // 🔥 Asegúrate de pasar `productId`
+        name,
+        price,
+        image,
+        quantity: 1,
+      });
   
-      const data = response.data as { items: CartItem[] };
-      addItem(data.items[0]);
     } catch (error) {
-      if (isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response?.status === 401) {
-          // Token is invalid or expired, try to refresh it
-          try {
-            const refreshToken = localStorage.getItem("refreshToken");
-            if (!refreshToken) {
-              throw new Error("No refresh token found");
-            }
-  
-            const newToken = await refreshAccessToken(refreshToken); // Implement this function
-            localStorage.setItem("authToken", newToken);
-  
-            // Retry the request with the new token
-            const retryResponse = await api.post(
-              "/cart",
-              { productId: id, quantity: 1 },
-              {
-                headers: {
-                  Authorization: `Bearer ${newToken}`,
-                },
-              }
-            );
-  
-            if (retryResponse.status !== 200) {
-              throw new Error("Failed to add item to cart after token refresh");
-            }
-  
-            const data = retryResponse.data as { items: CartItem[] };
-            addItem(data.items[0]);
-          } catch (refreshError) {
-            console.error("Failed to refresh token:", refreshError);
-            router.push("/login");
-          }
-        }
-      } else {
-        console.error("Error adding item to cart:", error);
-      }
+      console.error("Error adding item to cart:", error);
     } finally {
       setIsAnimating(false);
     }

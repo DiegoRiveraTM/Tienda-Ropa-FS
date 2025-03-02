@@ -46,7 +46,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       token,
       user: {
         id: user._id, // ✅ Cambiamos `_id` a `id`
-        name: user.name, // Asegúrate de que el modelo tiene "name"
+        //        name: user.name, // Asegúrate de que el modelo tiene "name"
         email: user.email,
         role: user.role,
       },

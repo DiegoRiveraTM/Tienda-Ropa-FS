@@ -1,6 +1,7 @@
 import { Response } from "express";
 import User from "../models/Users";
 import { AuthRequest } from "../middleware/auth";
+import { IProduct } from "../models/Product";
 
 // Obtener el carrito del usuario
 export const getCart = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -37,18 +38,31 @@ export const addToCart = async (req: AuthRequest, res: Response): Promise<void> 
     // Verificar si el producto ya está en el carrito
     const existingProduct = user.cart.find((item) => item.productId.toString() === productId);
     if (existingProduct) {
-      existingProduct.quantity += quantity; // Si ya está en el carrito, solo aumenta la cantidad
+      existingProduct.quantity += quantity;
     } else {
       user.cart.push({ productId, quantity });
     }
 
     await user.save();
 
-    res.status(200).json({ message: "Producto agregado al carrito", cart: user.cart });
+    // 🔥 Aquí hacemos populate para traer todos los datos del producto
+    const updatedUser = await User.findById(req.user?._id).populate("cart.productId");
+
+    // 🔄 Transformamos los datos antes de enviarlos al frontend
+    const cartWithDetails = updatedUser?.cart.map((item) => ({
+      id: (item.productId as any)._id || item.productId,
+      name: (item.productId as any).name,
+      price: (item.productId as any).price,
+      image: (item.productId as IProduct).image,
+      quantity: item.quantity,
+    }));
+
+    res.status(200).json({ message: "Producto agregado al carrito", cart: cartWithDetails });
   } catch (error: any) {
     res.status(500).json({ message: "Error en el servidor", error: error.message });
   }
 };
+
 
 // Eliminar un producto del carrito
 export const removeFromCart = async (req: AuthRequest, res: Response): Promise<void> => {

@@ -18,10 +18,24 @@ interface CartItemProps {
 export function CartItem({ item }: CartItemProps) {
   const { removeItem, updateQuantity } = useCart()
 
+  // Ajusta la URL de la imagen si es necesario
+  const imageUrl = item.image ? (item.image.startsWith("http") ? item.image : `/${item.image}`) : "/placeholder.svg";
+
   return (
     <div className="flex gap-4 py-2">
       <div className="relative aspect-square h-24">
-        <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover rounded-md" />
+        {item.image ? (
+          <Image 
+            src={imageUrl} 
+            alt={item.name || "Imagen de producto"} 
+            fill 
+            className="object-cover rounded-md" 
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full w-full bg-gray-200 rounded-md">
+            <span className="text-gray-500">No Image</span>
+          </div>
+        )}
       </div>
       <div className="flex flex-1 flex-col">
         <div className="flex justify-between">
@@ -56,4 +70,3 @@ export function CartItem({ item }: CartItemProps) {
     </div>
   )
 }
-

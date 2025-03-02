@@ -23,53 +23,52 @@ const mensProducts = [
     id: "m3",
     name: "Abrigo de Lana Italiano",
     price: 40.00,
-    image: "Abrigo-de-Lana-Italiano.jpg",
+    image: "/Abrigo-de-Lana-Italiano.jpg",
     category: "hombres",
   },
   {
     id: "m4",
     name: "Camisa de Lino",
     price: 25.00,
-    image: "Camisa-de-Lino.jpg",
+    image: "/Camisa-de-Lino.jpg",
     category: "hombres",
   },
   {
     id: "m5",
     name: "Pantalón de Vestir",
     price: 22.99,
-    image: "Pantalon-de-Vestir.jpg",
+    image: "/Pantalon-de-Vestir.jpg",
     category: "hombres",
   },
   {
     id: "m6",
     name: "Sweater Cashmere",
     price: 35.00,
-    image: "Sweater-Cashmere.jpg",
+    image: "/Sweater-Cashmere.jpg",
     category: "hombres",
   },
   {
     id: "m7",
     name: "Blazer Azul Marino",
     price: 40.00,
-    image: "Blazer-Azul-Marino.jpg",
+    image: "/Blazer-Azul-Marino.jpg",
     category: "hombres",
   },
   {
     id: "m8",
     name: "Polo Premium",
     price: 10.99,
-    image: "Polo-Premium.jpg",
+    image: "/Polo-Premium.jpg",
     category: "hombres",
   },
   {
     id: "m9",
     name: "Gabardina Clásica",
     price: 45.99,
-    image: "Gabardina-Clasica.jpg",
+    image: "/Gabardina-Clasica.jpg",
     category: "hombres",
   },
 ]
-
 export default function MensPage() {
   return (
     <>

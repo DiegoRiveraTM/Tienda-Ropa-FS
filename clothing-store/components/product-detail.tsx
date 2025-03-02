@@ -26,38 +26,36 @@ export function ProductDetail({ id, name, price, image, description, category }:
 
   const sizes = category === "ninos" ? ["4-5", "6-7", "8-9", "10-11", "12-13"] : ["XS", "S", "M", "L", "XL"]
 
-  const handleAddToCart = async () => {
-    if (selectedSize) {
-      setIsAnimating(true)
-
-      try {
-        const response = await fetch('/api/cart', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id: `${id}-${selectedSize}`,
-            name: `${name} (${selectedSize})`,
-            price,
-            image,
-            quantity: 1,
-          }),
-        })
-
-        if (!response.ok) {
-          throw new Error('Failed to add item to cart')
-        }
-
-        const data = await response.json()
-        addItem(data) // Assuming the backend returns the updated cart item
-      } catch (error) {
-        console.error('Error adding item to cart:', error)
-      } finally {
-        setIsAnimating(false)
-      }
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsAnimating(true);
+  
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      console.error("No authentication token found. Redirecting to login...");
+      router.push("/login");
+      setIsAnimating(false);
+      return;
     }
-  }
+  
+    try {
+      console.log("🛒 Intentando agregar al carrito:", { id, name, price, image });
+  
+      await addItem({
+        id,  // Add the id property
+        productId: id,  // 🔥 Cambia `id` a `productId`
+        name,
+        price,
+        image,
+        quantity: 1,
+      });
+  
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+    } finally {
+      setIsAnimating(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">

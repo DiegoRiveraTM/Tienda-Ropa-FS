@@ -33,9 +33,9 @@ export function CartSheet() {
               </div>
             ) : (
               <div className="space-y-4 py-4">
-                {items.map((item) => (
-                  <CartItem key={item.id} item={item} />
-                ))}
+              {items.map((item, index) => (
+                <CartItem key={item.id ?? `cart-item-${index}`} item={item} />
+              ))}
               </div>
             )}
           </ScrollArea>
