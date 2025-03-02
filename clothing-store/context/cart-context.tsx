@@ -6,7 +6,6 @@ import api from "@/lib/api"; // Usa Axios o Fetch según tu setup
 import axios from "axios";
 
 interface CartItem {
-  id: string;
   productId: string;
   name: string;
   price: number;
@@ -36,7 +35,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [showToast, setShowToast] = useState(false);
 
   // 📌 Obtener el token desde localStorage
-  const getToken = () => localStorage.getItem("authToken");
+  const getToken = () => {
+    const token = localStorage.getItem("authToken");
+    console.log("Token retrieved from localStorage:", token);
+    return token;
+  };
 
   // 🔄 Sincronizar el carrito con el backend
   const syncCart = useCallback(async (userId: string | null) => {
@@ -62,6 +65,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("❌ Error al sincronizar el carrito:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Detalles del error:", error.response?.data);
+      }
     }
   }, []);
 
@@ -72,20 +78,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       console.warn("⚠️ No hay token, no se puede agregar productos al carrito.");
       return;
     }
-  
+
     // 🔥 Verifica que `productId` y `quantity` existen antes de hacer la petición
     if (!item.productId || typeof item.quantity !== "number") {
       console.error("❌ Error: Producto o cantidad no válidos", item);
       return;
     }
-  
+
     try {
       console.log("🛒 Enviando al carrito:", JSON.stringify(item, null, 2));
-  
       const response = await api.post(
         "/cart",
         {
-          productId: item.productId, // Asegura que se envíe correctamente
+          productId: item.productId,
           quantity: item.quantity,
           name: item.name,
           price: item.price,
@@ -93,9 +98,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       console.log("📦 Respuesta del backend:", response.data);
-  
+
       if (response.status === 200) {
         const data = response.data as { cart: CartItem[] };
         console.log("✅ Carrito actualizado:", data.cart);

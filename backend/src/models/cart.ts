@@ -4,10 +4,10 @@ const CartSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
   products: [
     {
-      productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-      name: { type: String, required: true }, // 🛒 Guardar el nombre del producto
-      price: { type: Number, required: true }, // 💰 Guardar el precio
-      image: { type: String, required: true }, // 🖼️ Guardar la imagen
+      productId: { type: String, required: true }, // Cambiar a String
+      name: { type: String, required: true },
+      price: { type: Number, required: true },
+      image: { type: String, required: true },
       quantity: { type: Number, required: true, default: 1 },
     }
   ],

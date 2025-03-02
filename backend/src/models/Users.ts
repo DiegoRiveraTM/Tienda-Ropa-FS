@@ -1,9 +1,8 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { IProduct } from "./Product"; // Asegúrate de importar la interfaz del modelo Product si la tienes
 
 // Definir la interfaz para los ítems del carrito
 export interface ICartItem {
-  productId: mongoose.Schema.Types.ObjectId | IProduct; // Permitir el `ObjectId` o el objeto poblado
+  productId: string; // Cambiar a String
   quantity: number;
 }
 
@@ -17,7 +16,7 @@ export interface IUser extends Document {
 
 // Esquema de los ítems del carrito
 const CartItemSchema: Schema = new Schema({
-  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  productId: { type: String, required: true }, // Cambiar a String
   quantity: { type: Number, required: true, default: 1 }
 });
 

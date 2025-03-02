@@ -42,14 +42,13 @@ export function ProductDetail({ id, name, price, image, description, category }:
       console.log("🛒 Intentando agregar al carrito:", { id, name, price, image });
   
       await addItem({
-        id,  // Add the id property
-        productId: id,  // 🔥 Cambia `id` a `productId`
+        productId: id, // Envía el ID como cadena (por ejemplo, "w1", "m1", etc.)
         name,
         price,
         image,
         quantity: 1,
       });
-  
+      
     } catch (error) {
       console.error("Error adding item to cart:", error);
     } finally {

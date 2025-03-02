@@ -12,15 +12,15 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
   try {
     const response = await api.post("/auth/refresh-token", { token: refreshToken });
     if (response.status === 200) {
-      return response.data.token;
-    } else {
-      throw new Error("Failed to refresh access token");
+      const newToken = response.data.token;
+      localStorage.setItem("authToken", newToken); // 🔥 Guarda el nuevo token
+      return newToken;
     }
   } catch (error) {
-    throw new Error("Failed to refresh access token");
+    console.error("❌ Error refrescando el token:", error);
   }
+  return "";
 }
-import type { AxiosError } from "axios";
 
 interface CartItem {
   productId: string;  // 🔥 Asegúrate de que usa `productId` en vez de `id`
@@ -42,12 +42,12 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
   const router = useRouter();
   const { addItem } = useCart();
   const [isAnimating, setIsAnimating] = useState(false);
-
+  
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsAnimating(true);
   
-    const token = localStorage.getItem("authToken");
+    let token = localStorage.getItem("authToken");
     if (!token) {
       console.error("No authentication token found. Redirecting to login...");
       router.push("/login");
@@ -55,12 +55,12 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
       return;
     }
   
+
     try {
       console.log("🛒 Intentando agregar al carrito:", { id, name, price, image });
   
       await addItem({
-        id,
-        productId: id, // 🔥 Asegúrate de pasar `productId`
+        productId: id, 
         name,
         price,
         image,
@@ -68,7 +68,36 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
       });
   
     } catch (error) {
-      console.error("Error adding item to cart:", error);
+      if (isAxiosError(error) && error.response?.status === 401) {
+        console.log("Token inválido, intentando refrescar el token...");
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (refreshToken) {
+          try {
+            const newToken = await refreshAccessToken(refreshToken);
+            if (newToken) {
+              console.log("Token refrescado, reintentando agregar al carrito...");
+              await addItem({
+                productId: id,
+                name,
+                price,
+                image,
+                quantity: 1,
+              });
+            } else {
+              console.error("No se pudo refrescar el token. Redirigiendo a login...");
+              router.push("/login");
+            }
+          } catch (refreshError) {
+            console.error("Error refrescando el token:", refreshError);
+            router.push("/login");
+          }
+        } else {
+          console.error("No se encontró refresh token. Redirigiendo a login...");
+          router.push("/login");
+        }
+      } else {
+        console.error("Error agregando producto al carrito:", error);
+      }
     } finally {
       setIsAnimating(false);
     }

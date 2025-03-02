@@ -5,7 +5,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription, // Asegúrate de que esté disponible en tu librería
+  SheetDescription,
 } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
@@ -33,9 +33,9 @@ export function CartSheet() {
               </div>
             ) : (
               <div className="space-y-4 py-4">
-              {items.map((item, index) => (
-                <CartItem key={item.id ?? `cart-item-${index}`} item={item} />
-              ))}
+                {items.map((item, index) => (
+                  <CartItem key={item.productId ?? `cart-item-${index}`} item={{ ...item, id: item.productId }} />
+                ))}
               </div>
             )}
           </ScrollArea>
