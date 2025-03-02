@@ -34,12 +34,20 @@ export const createOrder = asyncHandler(async (req: AuthRequest, res: Response):
 for (const item of req.body.products) {
   console.log("🔍 Buscando producto con ID:", item.productId);
 
-  const product = await Product.findOne({ id: item.productId });
+  // Convertir el productId a un ObjectId
+  if (!mongoose.Types.ObjectId.isValid(item.productId)) {
+    console.error(`🚫 Error: El ID ${item.productId} no es un ObjectId válido.`);
+    res.status(400).json({ message: `El ID ${item.productId} no es válido.` });
+    return;
+  }
+
+  // Buscar por _id en lugar de id
+  const product = await Product.findById(item.productId);
 
   if (!product) {
-      console.error(`🚫 Producto con ID ${item.productId} no encontrado.`);
-      res.status(404).json({ message: `Producto con ID ${item.productId} no encontrado.` });
-      return;
+    console.error(`🚫 Producto con ID ${item.productId} no encontrado.`);
+    res.status(404).json({ message: `Producto con ID ${item.productId} no encontrado.` });
+    return;
   }
 
   total += product.price * item.quantity;

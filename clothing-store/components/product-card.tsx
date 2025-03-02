@@ -60,12 +60,14 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
       console.log("🛒 Intentando agregar al carrito:", { id, name, price, image });
   
       await addItem({
-        productId: id, 
+        _id: id,  // 🔥 Asegurar que se pase un _id válido
+        productId: id,
         name,
         price,
         image,
         quantity: 1,
       });
+      
   
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 401) {
@@ -77,12 +79,14 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
             if (newToken) {
               console.log("Token refrescado, reintentando agregar al carrito...");
               await addItem({
+                _id: id,  // 🔥 Asegurar que se pase un _id válido
                 productId: id,
                 name,
                 price,
                 image,
                 quantity: 1,
-              });
+              });              
+              
             } else {
               console.error("No se pudo refrescar el token. Redirigiendo a login...");
               router.push("/login");

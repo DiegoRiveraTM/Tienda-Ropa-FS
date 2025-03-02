@@ -47,6 +47,7 @@ export function ProductDetail({ id, name, price, image, description, category }:
         price,
         image,
         quantity: 1,
+        _id: undefined
       });
       
     } catch (error) {
