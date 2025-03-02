@@ -113,40 +113,84 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // ❌ Eliminar un producto del carrito
   const removeItem = useCallback(async (productId: string) => {
     try {
+      // Validar el productId
+      if (!productId || typeof productId !== "string") {
+        console.error("❌ Error: productId no válido", productId);
+        return;
+      }
+  
       const token = getToken();
-      if (!token) return;
-
+      if (!token) {
+        console.warn("⚠️ No hay token, no se puede eliminar el producto.");
+        return;
+      }
+  
+      console.log("🛒 Enviando DELETE con:", { productId, token }); // Debugging
+  
       const response = await api.delete(`/cart/${productId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Datos recibidos del backend:", response.data); // Debugging
+  
+      console.log("Respuesta del servidor:", response.data); // Debugging
+  
       if (response.status === 200) {
         const data = response.data as { cart: CartItem[] };
-        setItems(data.cart ?? []); // 🔥 Siempre un array
+        setItems(data.cart ?? []); // Actualizar el estado del carrito
+        console.log("✅ Producto eliminado correctamente.");
       }
     } catch (error) {
       console.error("❌ Error eliminando producto:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Detalles del error:", {
+          status: error.response?.status,
+          data: error.response?.data,
+        });
+      }
     }
   }, []);
 
   // 🔄 Actualizar cantidad de un producto
   const updateQuantity = useCallback(async (productId: string, quantity: number) => {
     try {
+      // Validar el productId y la cantidad
+      if (!productId || typeof productId !== "string") {
+        console.error("❌ Error: productId no válido", productId);
+        return;
+      }
+      if (typeof quantity !== "number" || quantity <= 0) {
+        console.error("❌ Error: Cantidad no válida", quantity);
+        return;
+      }
+  
       const token = getToken();
-      if (!token) return;
-
+      if (!token) {
+        console.warn("⚠️ No hay token, no se puede actualizar la cantidad.");
+        return;
+      }
+  
+      console.log("🛒 Enviando PUT con:", { productId, quantity }); // Debugging
+  
       const response = await api.put(
         "/cart",
         { productId, quantity },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
+      console.log("Respuesta del servidor:", response.data); // Debugging
+  
       if (response.status === 200) {
         const data = response.data as { cart: CartItem[] };
-        setItems(data.cart ?? []);
+        setItems(data.cart ?? []); // Actualizar el estado del carrito
+        console.log("✅ Cantidad actualizada correctamente.");
       }
     } catch (error) {
       console.error("❌ Error actualizando la cantidad del producto:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Detalles del error:", {
+          status: error.response?.status,
+          data: error.response?.data,
+        });
+      }
     }
   }, []);
 

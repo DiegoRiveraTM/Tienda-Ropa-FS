@@ -34,7 +34,6 @@ export const addToCart = async (req: AuthRequest, res: Response): Promise<void> 
       return;
     }
 
-    // Verificar si el producto ya está en el carrito
     const existingProduct = user.cart.find((item) => item.productId === productId);
     if (existingProduct) {
       existingProduct.quantity += quantity;
@@ -70,34 +69,31 @@ export const removeFromCart = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// Actualizar el carrito completo
+// Actualizar la cantidad de un producto en el carrito
 export const updateCart = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.user?._id);
+
     if (!user) {
       res.status(404).json({ message: "Usuario no encontrado" });
       return;
     }
-    const { products } = req.body;
-    if (!products || !Array.isArray(products)) {
-      res.status(400).json({ message: "El carrito debe ser un array de productos" });
+
+    const { productId, quantity } = req.body;
+
+    if (!productId || typeof quantity !== "number") {
+      res.status(400).json({ message: "Producto o cantidad no válidos" });
       return;
     }
-    // Valida que cada producto tenga los campos obligatorios
-    const validProducts = [];
-    for (const product of products) {
-      const { productId, name, price, image, quantity } = product;
-      if (!productId || !name || !price || !image || !quantity) {
-        res.status(400).json({ 
-          message: "Todos los campos son obligatorios para cada producto" 
-        });
-        return;
-      }
-      validProducts.push({ productId, name, price, image, quantity });
+
+    const product = user.cart.find((item) => item.productId === productId);
+    if (product) {
+      product.quantity = quantity;
+      await user.save();
+      res.status(200).json({ message: "Cantidad actualizada", cart: user.cart });
+    } else {
+      res.status(404).json({ message: "Producto no encontrado en el carrito" });
     }
-    user.cart = validProducts;
-    await user.save();
-    res.status(200).json({ message: "Carrito actualizado", cart: user.cart });
   } catch (error: any) {
     res.status(500).json({ message: "Error en el servidor", error: error.message });
   }

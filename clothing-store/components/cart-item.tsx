@@ -21,6 +21,17 @@ export function CartItem({ item }: CartItemProps) {
   // Ajusta la URL de la imagen si es necesario
   const imageUrl = item.image ? (item.image.startsWith("/") ? item.image : `/${item.image}`) : "/placeholder.png";
 
+  // Función para manejar la disminución de la cantidad
+  const handleDecreaseQuantity = () => {
+    if (item.quantity === 1) {
+      // Si la cantidad es 1, elimina el producto
+      removeItem(item.id);
+    } else {
+      // Si la cantidad es mayor que 1, disminuye la cantidad
+      updateQuantity(item.id, item.quantity - 1);
+    }
+  };
+
   return (
     <div className="flex gap-4 py-2">
       <div className="relative aspect-square h-24">
@@ -53,7 +64,7 @@ export function CartItem({ item }: CartItemProps) {
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+            onClick={handleDecreaseQuantity} // Usar la nueva función
           >
             <Minus className="h-4 w-4" />
           </Button>
