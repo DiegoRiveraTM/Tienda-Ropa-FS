@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, XCircle } from "lucide-react"
+import axios from "axios"
 
 export function RegisterForm() {
   const [email, setEmail] = useState("")
@@ -51,16 +52,12 @@ export function RegisterForm() {
 
     setIsLoading(true)
     try {
-      // Simular una llamada a la API
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const response = await axios.post("https://19fb-2806-230-4043-c3d8-21ca-14fa-2168-fc71.ngrok-free.app/api/auth/register", {
+        email,
+        password,
+      })
 
-      // Simular registro exitoso
-      if (email === "test@test.com") {
-        setStatus({
-          type: "error",
-          message: "Este correo electrónico ya está registrado",
-        })
-      } else {
+      if (response.status === 201) {
         setStatus({
           type: "success",
           message: "¡Registro exitoso! Ya puedes iniciar sesión.",
@@ -69,6 +66,11 @@ export function RegisterForm() {
         setEmail("")
         setPassword("")
         setConfirmPassword("")
+      } else {
+        setStatus({
+          type: "error",
+          message: response.data.message || "Ha ocurrido un error. Por favor, intenta nuevamente.",
+        })
       }
     } catch (error) {
       setStatus({

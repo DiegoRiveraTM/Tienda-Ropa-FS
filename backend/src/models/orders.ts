@@ -13,5 +13,16 @@ const OrderSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+interface IOrderProduct {
+  product: mongoose.Schema.Types.ObjectId;
+  quantity: number;
+}
+
+interface IOrder extends Document {
+  user: mongoose.Schema.Types.ObjectId;
+  products: IOrderProduct[];
+  total: number;
+}
+
 const Order = mongoose.model("Order", OrderSchema);
 export default Order;

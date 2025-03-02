@@ -12,6 +12,8 @@ interface CartItemProps {
     price: number
     image: string
     quantity: number
+    _id: string; // 🔥 Agregamos _id para evitar el error
+
   }
 }
 

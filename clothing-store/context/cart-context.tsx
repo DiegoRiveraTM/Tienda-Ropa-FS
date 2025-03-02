@@ -6,6 +6,7 @@ import api from "@/lib/api"; // Usa Axios o Fetch según tu setup
 import axios from "axios";
 
 interface CartItem {
+  _id: any;
   productId: string;
   name: string;
   price: number;

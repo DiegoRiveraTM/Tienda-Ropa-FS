@@ -12,9 +12,63 @@ import { Button } from "@/components/ui/button"
 import { useCart } from "@/context/cart-context"
 import { CartItem } from "./cart-item"
 import { Separator } from "@/components/ui/separator"
+import { useRouter } from "next/navigation"
+import api from "@/lib/api"
+import axios from "axios"
 
 export function CartSheet() {
-  const { isOpen, setIsOpen, items, total } = useCart();
+  const { isOpen, setIsOpen, items, total, clearCart } = useCart();
+  const router = useRouter();
+
+  const handleCheckout = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        console.error("❌ No hay token, no se puede proceder al pago.");
+        return;
+      }
+
+      const orderData = {
+        products: items.map(item => ({
+          productId: item._id,  // 🔥 Asegura que usas el _id correcto de MongoDB
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          quantity: item.quantity,
+        })),
+      };
+
+      console.log("📤 Enviando orden:", JSON.stringify(orderData, null, 2));
+
+      const response = await api.post("/orders", orderData, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+
+      console.log("✅ Orden creada con éxito:", response.data);
+
+      // ✅ Aquí token está bien declarado
+      const chargeResponse = await api.post(
+        "/api/coinbase/create-charge",
+        {
+          amount: total.toFixed(2),
+          currency: "USD",
+          redirect_url: "https://tutienda.com/success",
+          cancel_url: "https://tutienda.com/cancel"
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (chargeResponse.status === 200) {
+        console.log("✅ Cargo creado con éxito", chargeResponse.data);
+        clearCart();  // Limpiar el carrito después de generar el pago
+        window.location.href = chargeResponse.data.charge.data.hosted_url;
+      } else {
+        console.error("❌ Error al crear el cargo en Coinbase", chargeResponse.data);
+      }
+    } catch (error) {
+      console.error("❌ Error al proceder al pago:", error);
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -50,7 +104,7 @@ export function CartSheet() {
               <span className="font-semibold">${total.toFixed(2)}</span>
             </div>
           </div>
-          <Button className="w-full" size="lg">
+          <Button className="w-full" size="lg" onClick={handleCheckout}>
             Proceder al pago
           </Button>
         </div>
