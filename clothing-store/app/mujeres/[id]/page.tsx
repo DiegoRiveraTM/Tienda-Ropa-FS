@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ProductCard } from "@/components/product-card";
+import { useParams } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
+import { ProductDetail } from "@/components/product-detail";
 
 interface Product {
   _id: string;
@@ -12,43 +13,49 @@ interface Product {
   category: string;
 }
 
-export default function WomensPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+export default function ProductPage() {
+  const params = useParams();
+  const id = params?.id as string; // 🔥 Asegurar que sea un string válido
+  console.log("🔍 ID recibido desde useParams:", id);
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/products") // Cambia la URL si usas otro servidor
-      .then((res) => {
-        if (!res.ok) throw new Error("Error al obtener productos");
-        return res.json();
-      })
-      .then((data: Product[]) => {
-        console.log("📦 Productos recibidos:", data);
-        setProducts(data);
-      })
-      .catch((err) => {
-        console.error("❌ Error al obtener productos:", err);
-        setError("No se pudieron cargar los productos");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    if (!id) {
+      console.error("❌ No se recibió un ID en los parámetros.");
+      return;
+    }
+
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/products/${id}`);
+        if (!response.ok) throw new Error("Producto no encontrado");
+        
+        const data: Product = await response.json();
+        console.log("📦 Producto recibido:", data);
+        
+        setProduct(data);
+      } catch (error) {
+        console.error("❌ Error al obtener producto:", error);
+        setError("Producto no encontrado");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) return <p className="text-center">🔄 Cargando producto...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (!product) return <p className="text-center py-20">❌ Producto no encontrado</p>;
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-100">
       <SiteHeader />
-      <main className="container mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold mb-6">Ropa para Mujeres</h1>
-
-        {loading && <p className="text-center">🔄 Cargando productos...</p>}
-        {error && <p className="text-center text-red-500">{error}</p>}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product._id} {...product} />
-          ))}
-        </div>
-      </main>
-    </>
+      <ProductDetail {...product} />
+    </div>
   );
 }

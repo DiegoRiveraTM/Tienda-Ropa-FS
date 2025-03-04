@@ -28,7 +28,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-6xl mx-auto relative">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-QwCpIYpHr47SKF4JqkbmUExZALggoJ.png"
+              src="/Fondo.jpg"
               alt="Perro con disfraz de oso"
               width={600}
               height={600}
@@ -36,13 +36,6 @@ export default function Home() {
               priority
             />
             <div className="absolute left-8 bottom-12 space-y-3">
-              <h1 className="text-xl font-bold text-gray-900">Notable Collection</h1>
-              <p className="text-sm text-gray-700">Check out our notable collection </p>
-              <Link href="/coleccion-destacada">
-                <Button variant="secondary" size="default" className="bg-gray-200 hover:bg-gray-300 text-gray-900">
-                  Explorar
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
@@ -53,20 +46,16 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Últimas Novedades</h2>
-            <Link href="/coleccion-destacada" className="text-gray-600 hover:text-gray-900 flex items-center">
-              Ver todo
-              <span className="ml-2">→</span>
-            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Link href="/hombres" className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-WvRkwRVfOfvo6bZq8DmyW0XRkGCmha.png"
+                  src="/Coleccion Hombres.jpg"
                   alt="Colección Hombres"
                   width={400}
                   height={300}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-contain"
                 />
                 <div className="p-4">
                   <h3 className="font-semibold">Colección Hombres</h3>
@@ -77,11 +66,11 @@ export default function Home() {
             <Link href="/mujeres" className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-WvRkwRVfOfvo6bZq8DmyW0XRkGCmha.png"
+                  src="/Coleccion Mujeres.jpg"
                   alt="Colección Mujeres"
                   width={400}
                   height={300}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-contain"
                 />
                 <div className="p-4">
                   <h3 className="font-semibold">Colección Mujeres</h3>
@@ -92,11 +81,11 @@ export default function Home() {
             <Link href="/ninos" className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-WvRkwRVfOfvo6bZq8DmyW0XRkGCmha.png"
+                  src="/Coleccion Ninos.jpg"
                   alt="Colección Niños"
                   width={400}
                   height={300}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-contain"
                 />
                 <div className="p-4">
                   <h3 className="font-semibold">Colección Niños</h3>
@@ -113,20 +102,16 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Productos Destacados</h2>
-            <Link href="/coleccion-destacada" className="text-gray-600 hover:text-gray-900 flex items-center">
-              Ver todo
-              <span className="ml-2">→</span>
-            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Link href="/hombres" className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-WvRkwRVfOfvo6bZq8DmyW0XRkGCmha.png"
+                  src="/CD Hombres.jpg"
                   alt="Colección Hombres"
                   width={400}
                   height={300}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-contain"
                 />
                 <div className="p-4">
                   <h3 className="font-semibold">Colección Hombres</h3>
@@ -137,11 +122,11 @@ export default function Home() {
             <Link href="/mujeres" className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-WvRkwRVfOfvo6bZq8DmyW0XRkGCmha.png"
+                  src="/CD Mujeres.jpg"
                   alt="Colección Mujeres"
                   width={400}
                   height={300}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-contain"
                 />
                 <div className="p-4">
                   <h3 className="font-semibold">Colección Mujeres</h3>
@@ -152,11 +137,11 @@ export default function Home() {
             <Link href="/ninos" className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-WvRkwRVfOfvo6bZq8DmyW0XRkGCmha.png"
+                  src="/CD Ninos.jpg"
                   alt="Colección Niños"
                   width={400}
                   height={300}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-contain"
                 />
                 <div className="p-4">
                   <h3 className="font-semibold">Colección Niños</h3>
