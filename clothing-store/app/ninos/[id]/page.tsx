@@ -1,86 +1,51 @@
-"use client"
+"use client";
 
-import { SiteHeader } from "@/components/site-header"
-import { ProductDetail } from "@/components/product-detail"
-import { useParams } from "next/navigation"
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
+import { ProductDetail } from "@/components/product-detail";
 
-const kidsProducts = [
-  {
-    id: "k1",
-    name: "Conjunto Escolar",
-    price: 15.99,
-    image: "/Conjunto-Escolar.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k2",
-    name: "Abrigo Infantil Premium",
-    price: 22.99,
-    image: "/Abrigo-Infantil-Premium.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k3",
-    name: "Vestido de Fiesta Infantil",
-    price: 18.99,
-    image: "/Vestido-de-fiesta.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k4",
-    name: "Conjunto Deportivo Junior",
-    price: 12.99,
-    image: "/Conjunto-Deportivo.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k5",
-    name: "Pijama de Diseñador",
-    price: 10.99,
-    image: "/Pijama-de-disenador.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k6",
-    name: "Chaqueta Juvenil",
-    price: 15.00,
-    image: "/Chaqueta-Juvenil.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k7",
-    name: "Uniforme Deportivo",
-    price: 17.99,
-    image: "/Uniforme-Deportivo.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k8",
-    name: "Traje de Ceremonia",
-    price: 23.99,
-    image: "/Traje-de-Ceremonia.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k9",
-    name: "Conjunto Casual Premium",
-    price: 18.99,
-    image: "/Conjunto-Casual-Premium.jpg",
-    category: "ninos",
-  },
-]
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+}
 
 export default function ProductPage() {
-  const params = useParams()
-  const product = kidsProducts.find((p) => p.id === params.id)
+  const { id } = useParams();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!product) return null
+  useEffect(() => {
+    if (!id) return;
+
+    fetch(`http://localhost:4000/api/products/${id}`) // 👈 Ahora usa la API en vez del array local
+      .then((res) => {
+        if (!res.ok) throw new Error("Producto no encontrado");
+        return res.json();
+      })
+      .then((data: Product) => {
+        console.log("📌 Producto recibido:", data);
+        setProduct(data);
+      })
+      .catch((err) => {
+        console.error("❌ Error al obtener el producto:", err);
+        setError("No se pudo cargar el producto");
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <p className="text-center">🔄 Cargando producto...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (!product) return <p className="text-center py-20">❌ Producto no encontrado</p>;
 
   return (
     <div className="min-h-screen bg-gray-100">
       <SiteHeader />
       <ProductDetail {...product} />
     </div>
-  )
+  );
 }
-

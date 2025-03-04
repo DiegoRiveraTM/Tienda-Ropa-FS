@@ -8,8 +8,16 @@ const router: express.Router = express.Router();
 router.get("/", async (req: Request, res: Response): Promise<void> => {
   try {
     const products = await Product.find();
-    res.status(200).json(products);
+
+    // 🔥 Asegurar que `_id` sea un string y devolver un array
+    const formattedProducts = products.map((product) => ({
+      ...product.toObject(),
+      _id: product._id.toString(),
+    }));
+
+    res.status(200).json(formattedProducts);
   } catch (error) {
+    console.error("❌ Error fetching products:", error);
     res.status(500).json({ message: "❌ Error fetching products" });
   }
 });

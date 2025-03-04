@@ -1,24 +1,26 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Minus, Plus, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useCart } from "@/context/cart-context"
+import Image from "next/image";
+import { Minus, Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/cart-context";
 
 interface CartItemProps {
   item: {
-    id: string
-    name: string
-    price: number
-    image: string
-    quantity: number
-    _id: string; // 🔥 Agregamos _id para evitar el error
-
-  }
+    id?: string; // Hacemos que id sea opcional
+    _id: string; // MongoDB usa _id
+    name: string;
+    price: number;
+    image: string;
+    quantity: number;
+  };
 }
 
 export function CartItem({ item }: CartItemProps) {
-  const { removeItem, updateQuantity } = useCart()
+  const { removeItem, updateQuantity } = useCart();
+
+  // 🔥 Aseguramos que siempre haya un ID válido
+  const itemId = item.id || item._id;
 
   // Ajusta la URL de la imagen si es necesario
   const imageUrl = item.image ? (item.image.startsWith("/") ? item.image : `/${item.image}`) : "/placeholder.png";
@@ -26,11 +28,9 @@ export function CartItem({ item }: CartItemProps) {
   // Función para manejar la disminución de la cantidad
   const handleDecreaseQuantity = () => {
     if (item.quantity === 1) {
-      // Si la cantidad es 1, elimina el producto
-      removeItem(item.id);
+      removeItem(itemId); // 🔥 Ahora itemId siempre está definido
     } else {
-      // Si la cantidad es mayor que 1, disminuye la cantidad
-      updateQuantity(item.id, item.quantity - 1);
+      updateQuantity(itemId, item.quantity - 1);
     }
   };
 
@@ -57,7 +57,7 @@ export function CartItem({ item }: CartItemProps) {
             <h3 className="font-medium">{item.name}</h3>
             <p className="text-sm text-gray-500">${typeof item.price === 'number' ? item.price.toFixed(2) : "N/A"}</p>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeItem(item.id)}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeItem(itemId)}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -66,7 +66,7 @@ export function CartItem({ item }: CartItemProps) {
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={handleDecreaseQuantity} // Usar la nueva función
+            onClick={handleDecreaseQuantity}
           >
             <Minus className="h-4 w-4" />
           </Button>
@@ -75,12 +75,12 @@ export function CartItem({ item }: CartItemProps) {
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+            onClick={() => updateQuantity(itemId, item.quantity + 1)}
           >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }

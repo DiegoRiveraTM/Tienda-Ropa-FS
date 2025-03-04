@@ -13,7 +13,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
     const response = await api.post("/auth/refresh-token", { token: refreshToken });
     if (response.status === 200) {
       const newToken = response.data.token;
-      localStorage.setItem("authToken", newToken); // 🔥 Guarda el nuevo token
+      localStorage.setItem("authToken", newToken);
       return newToken;
     }
   } catch (error) {
@@ -23,7 +23,8 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
 }
 
 interface CartItem {
-  productId: string;  // 🔥 Asegúrate de que usa `productId` en vez de `id`
+  _id: string; // Asegúrate de que esta propiedad esté en la interfaz
+  productId: string;
   name: string;
   price: number;
   image: string;
@@ -31,22 +32,35 @@ interface CartItem {
 }
 
 interface ProductCardProps {
-  id: string;
+  _id: string;
   name: string;
   price: number;
   image: string;
   category: string;
 }
 
-export function ProductCard({ id, name, price, image, category }: ProductCardProps) {
+export function ProductCard({ _id, name, price, image, category }: ProductCardProps) {
+  console.log("🛒 Recibiendo producto en ProductCard:", { _id, name, price, image });
+
+  if (!_id) {
+    console.error("⚠️ Producto sin _id recibido:", { name, price, image });
+  }
+  
   const router = useRouter();
   const { addItem } = useCart();
   const [isAnimating, setIsAnimating] = useState(false);
-  
+
   const handleAddToCart = async (e: React.MouseEvent) => {
+    console.log("🛒 Intentando agregar al carrito:", { _id, name, price, image });
+  
+    if (!_id) {
+      console.error("❌ Error: el producto no tiene un `_id` válido.");
+      return;
+    }
+  
     e.stopPropagation();
     setIsAnimating(true);
-  
+
     let token = localStorage.getItem("authToken");
     if (!token) {
       console.error("No authentication token found. Redirecting to login...");
@@ -54,19 +68,19 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
       setIsAnimating(false);
       return;
     }
-  
 
     try {
-      console.log("🛒 Intentando agregar al carrito:", { id, name, price, image });
-  
+      console.log("🛒 Intentando agregar al carrito:", { _id, name, price, image });
+
       await addItem({
-        productId: id, 
+        _id, // Agrega _id aquí
+        productId: _id,
         name,
         price,
         image,
         quantity: 1,
       });
-  
+
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 401) {
         console.log("Token inválido, intentando refrescar el token...");
@@ -77,7 +91,8 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
             if (newToken) {
               console.log("Token refrescado, reintentando agregar al carrito...");
               await addItem({
-                productId: id,
+                _id, // Agrega _id aquí
+                productId: _id,
                 name,
                 price,
                 image,
@@ -102,9 +117,9 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
       setIsAnimating(false);
     }
   };
-  
+
   const handleClick = () => {
-    router.push(`/${category}/${id}`);
+    router.push(`/${category}/${_id}`);
   };
 
   return (

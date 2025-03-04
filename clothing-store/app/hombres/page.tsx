@@ -1,87 +1,54 @@
-"use client"
+"use client";
 
-import { ProductCard } from "@/components/product-card"
-import { SiteHeader } from "@/components/site-header"
-import Image from "next/image";
+import { useEffect, useState } from "react";
+import { ProductCard } from "@/components/product-card";
+import { SiteHeader } from "@/components/site-header";
+import api from "@/lib/api";
 
-const mensProducts = [
-  {
-    id: "m1",
-    name: "Chaqueta de Cuero Premium",
-    price: 60.00,
-    image: "/Chaqueta-de-Cuero-Premium.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m2",
-    name: "Traje Ejecutivo Negro",
-    price: 75.00,
-    image: "/Traje-Ejecutivo-Negro.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m3",
-    name: "Abrigo de Lana Italiano",
-    price: 40.00,
-    image: "/Abrigo-de-Lana-Italiano.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m4",
-    name: "Camisa de Lino",
-    price: 25.00,
-    image: "/Camisa-de-Lino.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m5",
-    name: "Pantalón de Vestir",
-    price: 22.99,
-    image: "/Pantalon-de-Vestir.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m6",
-    name: "Sweater Cashmere",
-    price: 35.00,
-    image: "/Sweater-Cashmere.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m7",
-    name: "Blazer Azul Marino",
-    price: 40.00,
-    image: "/Blazer-Azul-Marino.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m8",
-    name: "Polo Premium",
-    price: 10.99,
-    image: "/Polo-Premium.jpg",
-    category: "hombres",
-  },
-  {
-    id: "m9",
-    name: "Gabardina Clásica",
-    price: 45.99,
-    image: "/Gabardina-Clasica.jpg",
-    category: "hombres",
-  },
-]
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+}
+
 export default function MensPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await api.get("/products");
+        console.log("📦 Respuesta de la API:", response.data);
+  
+        if (!Array.isArray(response.data)) {
+          throw new Error("❌ La API no devolvió un array de productos.");
+        }
+  
+        const filteredProducts = response.data.filter(
+          (product) => product.category === "hombres"
+        );
+  
+        setProducts(filteredProducts);
+      } catch (error) {
+        console.error("❌ Error al obtener productos:", error);
+      }
+    };
+  
+    fetchProducts();
+  }, []);
   return (
     <>
       <SiteHeader />
       <main className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-6">Ropa para Hombres</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mensProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
+          {products.map((product) => (
+            <ProductCard key={product._id} {...product} />
           ))}
         </div>
       </main>
     </>
-  )
+  );
 }
-

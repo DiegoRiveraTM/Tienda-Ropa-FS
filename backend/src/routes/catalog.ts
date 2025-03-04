@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { getAllProducts, getProductsByCategory, getProductById } from "../controllers/productController";
+import getAllProducts from "../controllers/productController";
+import getProductsByCategory from "../controllers/productController";
+import getProductById from "../controllers/productController";
 
 const router = Router();
 

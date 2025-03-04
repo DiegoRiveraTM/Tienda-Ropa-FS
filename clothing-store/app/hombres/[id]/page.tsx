@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ProductCard } from "@/components/product-card";
+import { useParams } from "next/navigation";
+import { ProductDetail } from "@/components/product-detail";
 import { SiteHeader } from "@/components/site-header";
 import api from "@/lib/api";
 
@@ -13,34 +14,41 @@ interface Product {
   category: string;
 }
 
-export default function MensPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+export default function ProductPage() {
+  const params = useParams(); // 🔍 Obtener parámetros de la URL
+  const id = params?.id as string; // 🔥 Asegurar que sea un string válido
+  console.log("🔍 ID recibido desde useParams:", id);
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    if (!id) return;
+
+    const fetchProduct = async () => {
       try {
-        const response = await api.get<Product[]>("/products");
-        const mensProducts = response.data.filter((product) => product.category === "hombres");
-        setProducts(mensProducts);
+        const response = await api.get<Product>(`/products/${id}`);
+        console.log("📦 Producto recibido:", response.data);
+        setProduct(response.data);
       } catch (error) {
-        console.error("Error al obtener productos:", error);
+        console.error("❌ Error al obtener producto:", error);
+        setError("Producto no encontrado");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchProducts();
-  }, []);
+    fetchProduct();
+  }, [id]);
+
+  if (loading) return <p className="text-center">🔄 Cargando producto...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <>
       <SiteHeader />
-      <main className="container mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold mb-6">Ropa para Hombres</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <ProductCard id={product._id} key={product._id} {...product} />
-          ))}
-        </div>
-      </main>
+      {product ? <ProductDetail {...product} /> : <p className="text-center">No se encontró el producto</p>}
     </>
   );
 }

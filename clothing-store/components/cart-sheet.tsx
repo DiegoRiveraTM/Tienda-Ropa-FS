@@ -30,11 +30,11 @@ export function CartSheet() {
 
       const orderData = {
         products: items.map(item => ({
-          productId: item._id,  // 🔥 Asegura que usas el _id correcto de MongoDB
-          name: item.name,
-          price: item.price,
-          image: item.image,
-          quantity: item.quantity,
+            productId: item._id.toString(),  // 🔥 Asegura que usas el _id correcto de MongoDB
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            quantity: item.quantity,
         })),
       };
 

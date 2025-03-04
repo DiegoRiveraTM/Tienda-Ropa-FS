@@ -1,87 +1,54 @@
-"use client"
+"use client";
 
-import { ProductCard } from "@/components/product-card"
-import { SiteHeader } from "@/components/site-header"
+import { useEffect, useState } from "react";
+import { ProductCard } from "@/components/product-card";
+import { SiteHeader } from "@/components/site-header";
 
-const kidsProducts = [
-  {
-    id: "k1",
-    name: "Conjunto Escolar",
-    price: 15.99,
-    image: "/Conjunto-Escolar.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k2",
-    name: "Abrigo Infantil Premium",
-    price: 22.99,
-    image: "/Abrigo-Infantil-Premium.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k3",
-    name: "Vestido de Fiesta Infantil",
-    price: 18.99,
-    image: "/Vestido-de-fiesta.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k4",
-    name: "Conjunto Deportivo Junior",
-    price: 12.99,
-    image: "/Conjunto-Deportivo.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k5",
-    name: "Pijama de Diseñador",
-    price: 10.99,
-    image: "/Pijama-de-disenador.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k6",
-    name: "Chaqueta Juvenil",
-    price: 15.00,
-    image: "/Chaqueta-Juvenil.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k7",
-    name: "Uniforme Deportivo",
-    price: 17.99,
-    image: "/Uniforme-Deportivo.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k8",
-    name: "Traje de Ceremonia",
-    price: 23.99,
-    image: "/Traje-de-Ceremonia.jpg",
-    category: "ninos",
-  },
-  {
-    id: "k9",
-    name: "Conjunto Casual Premium",
-    price: 18.99,
-    image: "/Conjunto-Casual-Premium.jpg",
-    category: "ninos",
-  },
-]
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+}
 
 export default function KidsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/api/products") // 🔥 Ahora consulta la API
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al obtener productos");
+        return res.json();
+      })
+      .then((data: Product[]) => {
+        console.log("📦 Productos recibidos:", data);
+        setProducts(data.filter((p) => p.category === "ninos")); // 🔥 Filtrar por categoría
+      })
+      .catch((err) => {
+        console.error("❌ Error al obtener productos:", err);
+        setError("No se pudieron cargar los productos");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <>
       <SiteHeader />
       <main className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-6">Ropa para Niños</h1>
+
+        {loading && <p className="text-center">🔄 Cargando productos...</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {kidsProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
+          {products.map((product) => (
+            <ProductCard key={product._id} {...product} />
           ))}
         </div>
       </main>
     </>
-  )
+  );
 }
-

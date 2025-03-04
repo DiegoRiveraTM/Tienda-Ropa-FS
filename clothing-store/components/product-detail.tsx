@@ -8,17 +8,18 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft } from "lucide-react"
 import { useCart } from "@/context/cart-context"
+// import { id } from "date-fns/locale"
 
 interface ProductDetailProps {
-  id: string
-  name: string
-  price: number
-  image: string
-  description?: string
-  category: string
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  description?: string;
+  category: string;
 }
 
-export function ProductDetail({ id, name, price, image, description, category }: ProductDetailProps) {
+export function ProductDetail({ _id, name, price, image, description, category }: ProductDetailProps) {
   const router = useRouter()
   const { addItem } = useCart()
   const [selectedSize, setSelectedSize] = useState<string>("")
@@ -39,16 +40,17 @@ export function ProductDetail({ id, name, price, image, description, category }:
     }
   
     try {
-      console.log("🛒 Intentando agregar al carrito:", { id, name, price, image });
+      console.log("🛒 Intentando agregar al carrito:", { _id, name, price, image });
   
       await addItem({
-        productId: id, // Envía el ID como cadena (por ejemplo, "w1", "m1", etc.)
+        _id, // Agrega _id aquí
+        productId: _id,
         name,
         price,
         image,
         quantity: 1,
       });
-      
+  
     } catch (error) {
       console.error("Error adding item to cart:", error);
     } finally {
