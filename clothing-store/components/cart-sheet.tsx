@@ -51,7 +51,7 @@ export function CartSheet() {
 
       // ✅ Aquí token está bien declarado
       const chargeResponse = await api.post(
-        "/api/coinbase/create-charge",
+        "/coinbase/create-charge",
         {
           amount: total.toFixed(2),
           currency: "USD",
