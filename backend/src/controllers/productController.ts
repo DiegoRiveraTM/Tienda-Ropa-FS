@@ -15,7 +15,6 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
       ...product.toObject(),
       _id: product._id.toString(),
     }));
-
     res.status(200).json(formattedProducts);
   } catch (error) {
     console.error("❌ Error fetching products:", error);

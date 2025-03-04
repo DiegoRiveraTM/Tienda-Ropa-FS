@@ -80,5 +80,33 @@ router.put("/update-stock/:id", verifyToken, isAdmin, async (req: AuthRequest, r
       return;
     }
   });
+
+  // Ruta de prueba para obtener solo _id y name
+  router.get("/test-products", async (req, res) => {
+    try {
+      console.log("📡 Conectando a MongoDB...");
+      
+      // Prueba si MongoDB está bien conectado
+      const isConnected = await Product.db.readyState;
+      console.log("🟢 Estado de conexión a MongoDB:", isConnected); 
+  
+      const products = await Product.find({}, { _id: 1, name: 1 });
+  
+      console.log("📦 Productos encontrados:", products);
+      
+      if (!products || products.length === 0) {
+        throw new Error("No se encontraron productos en la base de datos");
+      }
+  
+      res.json(products);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("❌ Error al obtener productos:", error.message);
+      } else {
+        console.error("❌ Error al obtener productos:", error);
+      }
+      res.status(500).json({ message: `❌ Error fetching product: ${(error as Error).message}` });
+    }
+  });
   
 export default router;

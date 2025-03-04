@@ -6,9 +6,13 @@ import User from '../models/Users';
 dotenv.config();
 
 export interface AuthRequest extends Request {
-  user?: { _id: string; name: string; email: string; role: string };
+  user?: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
-
 interface DecodedUser extends JwtPayload {
   id: string;
   email: string;
@@ -39,10 +43,10 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
     }
 
     req.user = {
-      _id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      role: user.role,
+      _id: decoded.id,
+      name: decoded.name,
+      email: decoded.email,
+      role: decoded.role || 'user',
     };
     next();
   } catch (error) {

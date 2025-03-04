@@ -42,6 +42,8 @@ app.use("/api/coinbase/webhook", bodyParser.raw({ type: "application/json" }));
 // 📌 Importar rutas de Webhooks
 app.use("/api/coinbase/webhook", webhookRoutes);
 
+app.use("/api/products", productRoutes);
+
 // 📌 Configuración de sesiones
 app.use(
   session({
